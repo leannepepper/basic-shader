@@ -3,6 +3,7 @@
     // uniform mat4 modelMatrix;
     uniform vec2 ufrequency;
     uniform float utime;
+    uniform float uMouse;
 
     // attribute vec3 position;
     attribute float aRandom;
@@ -12,6 +13,7 @@
     varying vec2 vUv;
     varying float vElevation;
     varying float vtime;
+    varying float vMouse;
 
     void main()
     {
@@ -28,4 +30,5 @@
         vUv = uv;
         vElevation = elevation;
         vtime = utime;
+        vMouse = uMouse;
     }

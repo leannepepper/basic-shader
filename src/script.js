@@ -44,7 +44,8 @@ const material = new THREE.ShaderMaterial({
    uniforms : {
        ufrequency: {value: new THREE.Vector2(10,5)},
        utime: {value: 0},
-       uTexture: {value: flagTexture}
+       uTexture: {value: flagTexture},
+       uMouse: {value: 0},
    }
 })
 gui.add(material.uniforms.ufrequency.value, 'x').min(0).max(20).step(0.01).name('frequencyX')
@@ -54,6 +55,14 @@ gui.add(material.uniforms.ufrequency.value, 'y').min(0).max(20).step(0.01).name(
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
+/**
+ * Mouse Move 
+ */
+function handleMouseMove(evt){
+        material.uniforms.uMouse.value = evt.clientX * 0.001;
+}
+
+window.addEventListener('mousemove', handleMouseMove)
 
 /**
  * Sizes
