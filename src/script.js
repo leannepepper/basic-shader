@@ -21,6 +21,7 @@ const scene = new THREE.Scene()
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
+const flagTexture = textureLoader.load('/textures/flag-french.jpg')
 
 /**
  * Test mesh
@@ -37,12 +38,13 @@ for(let i = 0; i < count; i++){
 geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1))
 
 // Material
-const material = new THREE.RawShaderMaterial({
+const material = new THREE.ShaderMaterial({
     vertexShader: testVertexShader,
     fragmentShader: testFragmentShader,
    uniforms : {
        ufrequency: {value: new THREE.Vector2(10,5)},
-       utime: {value: 0}
+       utime: {value: 0},
+       uTexture: {value: flagTexture}
    }
 })
 gui.add(material.uniforms.ufrequency.value, 'x').min(0).max(20).step(0.01).name('frequencyX')
