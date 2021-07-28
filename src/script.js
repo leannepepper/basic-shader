@@ -3,7 +3,8 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 import testVertexShader from './shaders/test/vertex.glsl'
-import testFragmentShader from './shaders/test/fragment.glsl'
+//import testFragmentShader from './shaders/test/fragment.glsl'
+import algorithmicFragmentShader from './shaders/test/algorithmic-fragment.glsl'
 
 /**
  * Base
@@ -27,7 +28,7 @@ const flagTexture = textureLoader.load('/textures/flag-french.jpg')
  * Test mesh
  */
 // Geometry
-const geometry = new THREE.PlaneGeometry(1, 1, 32, 32)
+var geometry = new THREE.PlaneBufferGeometry( 2, 2 );
 const count = geometry.attributes.position.count;
 const randoms = new Float32Array(count)
 
@@ -40,12 +41,13 @@ geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1))
 // Material
 const material = new THREE.ShaderMaterial({
     vertexShader: testVertexShader,
-    fragmentShader: testFragmentShader,
+    fragmentShader: algorithmicFragmentShader,
    uniforms : {
        ufrequency: {value: new THREE.Vector2(10,5)},
-       utime: {value: 0},
        uTexture: {value: flagTexture},
-       uMouse: {value: 0},
+       u_time: {value: 0},
+       u_resolution: { value: new THREE.Vector2() },
+       u_mouse: { value: new THREE.Vector2() },
    }
 })
 gui.add(material.uniforms.ufrequency.value, 'x').min(0).max(20).step(0.01).name('frequencyX')
@@ -59,7 +61,8 @@ scene.add(mesh)
  * Mouse Move 
  */
 function handleMouseMove(evt){
-        material.uniforms.uMouse.value = evt.clientX * 0.001;
+        material.uniforms.u_mouse.value.x = evt.clientX * 0.001;
+        material.uniforms.u_mouse.value.y = evt.clientY * 0.001;
 }
 
 window.addEventListener('mousemove', handleMouseMove)
@@ -85,6 +88,10 @@ window.addEventListener('resize', () =>
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+    //Update uniforms
+    material.uniforms.u_resolution.value.x = renderer.domElement.width;
+    material.uniforms.u_resolution.value.y = renderer.domElement.height;
 })
 
 /**
@@ -108,6 +115,9 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+material.uniforms.u_resolution.value.x = renderer.domElement.width;
+material.uniforms.u_resolution.value.y = renderer.domElement.height;
+
 /**
  * Animate
  */
@@ -124,7 +134,7 @@ const tick = () =>
     renderer.render(scene, camera)
 
      // Update material
-     material.uniforms.utime.value = elapsedTime
+     material.uniforms.u_time.value = elapsedTime
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
