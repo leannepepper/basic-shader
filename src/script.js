@@ -4,7 +4,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 import testVertexShader from './shaders/test/vertex.glsl'
 //import testFragmentShader from './shaders/test/fragment.glsl'
-import algorithmicFragmentShader from './shaders/test/algorithmic-fragment.glsl'
+//import testFragmentShader from './shaders/test/algorithmic-fragment.glsl'
+import testFragmentShader from './shaders/test/profile-fragment.glsl'
 
 /**
  * Base
@@ -41,17 +42,17 @@ geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1))
 // Material
 const material = new THREE.ShaderMaterial({
     vertexShader: testVertexShader,
-    fragmentShader: algorithmicFragmentShader,
+    fragmentShader: testFragmentShader,
    uniforms : {
-       ufrequency: {value: new THREE.Vector2(10,5)},
+       u_frequency: {value: new THREE.Vector2(10,5)},
        uTexture: {value: flagTexture},
        u_time: {value: 0},
        u_resolution: { value: new THREE.Vector2() },
        u_mouse: { value: new THREE.Vector2() },
    }
 })
-gui.add(material.uniforms.ufrequency.value, 'x').min(0).max(20).step(0.01).name('frequencyX')
-gui.add(material.uniforms.ufrequency.value, 'y').min(0).max(20).step(0.01).name('frequencyY')
+gui.add(material.uniforms.u_frequency.value, 'x').min(0).max(20).step(0.01).name('frequencyX')
+gui.add(material.uniforms.u_frequency.value, 'y').min(0).max(20).step(0.01).name('frequencyY')
 
 // Mesh
 const mesh = new THREE.Mesh(geometry, material)
