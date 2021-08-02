@@ -2,6 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
+import Spring from 'tiny-spring'
 import testVertexShader from './shaders/test/vertex.glsl'
 //import testFragmentShader from './shaders/test/fragment.glsl'
 //import testFragmentShader from './shaders/test/algorithmic-fragment.glsl'
@@ -29,6 +30,7 @@ const flagTexture = textureLoader.load('/textures/flag-french.jpg')
  * Test mesh
  */
 // Geometry
+
 var geometry = new THREE.PlaneBufferGeometry( 2, 2 );
 const count = geometry.attributes.position.count;
 const randoms = new Float32Array(count)
@@ -51,13 +53,22 @@ const material = new THREE.ShaderMaterial({
        u_mouse: { value: new THREE.Vector2() },
    }
 })
-gui.add(material.uniforms.u_frequency.value, 'x').min(0).max(20).step(0.01).name('frequencyX')
-gui.add(material.uniforms.u_frequency.value, 'y').min(0).max(20).step(0.01).name('frequencyY')
+material.side = THREE.DoubleSide;
+//gui.add(material.uniforms.u_frequency.value, 'x').min(0).max(20).step(0.01).name('frequencyX')
+//gui.add(material.uniforms.u_frequency.value, 'y').min(0).max(20).step(0.01).name('frequencyY')
 
 // Mesh
-const mesh = new THREE.Mesh(geometry, material)
-scene.add(mesh)
+for(let i = 0; i < 200; i++) {
+const star = new THREE.Mesh(geometry, material)
+star.position.x = (Math.random() - 0.5) * 25
+star.position.y = (Math.random() - 0.5) * 25
+star.position.z = (Math.random() - 0.5) * 25
 
+const scale = Math.random()
+star.scale.set(scale, scale, scale)
+
+scene.add(star)
+}
 /**
  * Mouse Move 
  */
@@ -99,9 +110,29 @@ window.addEventListener('resize', () =>
  * Camera
  */
 // Base camera
+let maxZoom = 100.0;
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.set(0.25, - 0.25, 1)
+camera.position.set(maxZoom, 0.0, 1)
 scene.add(camera)
+
+/** 
+ * Spring Animation
+*/
+
+const spring = Spring(maxZoom, {stiffness: 300, damping: 40});
+
+spring.onUpdate(val => {
+    camera.position.set(val, 0.0, 1)
+ });
+  
+spring.setValue(maxZoom);
+
+spring.transitionTo(10.0);
+
+spring.onRest(() => {
+    spring.destroy();
+});
+
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
@@ -130,12 +161,12 @@ const tick = () =>
 
     // Update controls
     controls.update()
-
+    
     // Render
     renderer.render(scene, camera)
 
-     // Update material
-     material.uniforms.u_time.value = elapsedTime
+    // Update material
+     material.uniforms.u_time.value = elapsedTime 
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
