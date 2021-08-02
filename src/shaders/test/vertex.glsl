@@ -11,7 +11,7 @@
 
     varying float vRandom; 
     varying vec2 vUv;
-    varying float vElevation;
+    //varying float vElevation;
     varying float vtime;
     varying vec2 vMouse;
 
